@@ -9,12 +9,6 @@ from activations import Sigmoid, Tanh
 from loss_functions import binary_cross_entropy, binary_cross_entropy_prime
 from network import train, predict
 
-
-def to_one_hot(y_value):
-    num_classes = np.max(y_value) + 1
-    one_hot_matrix = np.eye(num_classes)[y_value.reshape(-1)]
-    return one_hot_matrix.reshape(list(y_value.shape) + [num_classes])
-
 def preproces_data(x, y, limit):
     zero_index = np.where(y == 0)[0][:limit]
     one_index = np.where(y == 1)[0][:limit]
@@ -24,7 +18,7 @@ def preproces_data(x, y, limit):
     x = x.reshape(len(x), 1, 28, 28)
     x = x.astype('float32') / 255
     y = to_categorical(y)
-
+    y = y.reshape(len(y), 2, 1)
     return x, y
 
 

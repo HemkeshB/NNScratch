@@ -3,8 +3,8 @@ import numpy as np
 
 class Dense(Layer):
     def __init__(self, input_size, output_size):
-        self.weights = np.random.rand(output_size, input_size)
-        self.biases = np.random.rand(output_size, 1)
+        self.weights = np.random.randn(output_size, input_size)
+        self.biases = np.random.randn(output_size, 1)
 
     def forward(self, input):
         self.input = input

@@ -13,9 +13,7 @@ def preprocess_data(x, y, limit):
     x = x.reshape(x.shape[0], 28 * 28, 1)  # Flatten images and add channel dimension
     x = x.astype("float32") / 255  # Normalize pixel values
     y = to_categorical(y)  # One-hot encode labels
-    print(y)
     y = y.reshape(y.shape[0], 10, 1)  # Reshape to (N, 10, 1) to match the network output format
-    print(y)
     return x[:limit], y[:limit]
 
 # Load MNIST data
