@@ -24,7 +24,7 @@ def preproces_data(x, y, limit):
     x = x.reshape(len(x), 1, 28, 28)
     x = x.astype('float32') / 255
     y = to_categorical(y)
-    y = y.reshape(len(y), 2, 1)
+
     return x, y
 
 

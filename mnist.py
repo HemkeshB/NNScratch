@@ -26,7 +26,9 @@ x_test, y_test = preprocess_data(x_test, y_test, 20)
 
 # neural network
 network = [
-    Dense(28 * 28, 40),
+    Dense(28 * 28, 100),
+    Tanh(),
+    Dense(100, 40),
     Tanh(),
     Dense(40, 10),
     Tanh()
