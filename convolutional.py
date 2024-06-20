@@ -19,8 +19,8 @@ class Convolutional(Layer):
         self.outputs = np.copy(self.biases)  # this is just because they have the same shape
         for i in range(self.depth):
             for j in range(self.input_depth):
-                self.output[i] += signal.correlate2d(self.inputs[j], self.kernals[i, j], "valid")
-        return self.output
+                self.outputs[i] += signal.correlate2d(self.inputs[j], self.kernals[i, j], "valid")
+        return self.outputs
 
     def backward(self, output_grad, learning_rate):
         kernels_gradient = np.zeros(self.kernals.shape)
