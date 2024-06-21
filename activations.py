@@ -23,6 +23,6 @@ class Sigmoid(Activation):
 
 class Relu(Activation):
     def __init__(self):
-        relu = lambda x: np.maximum(x, 0)
-        relu_prime = lambda x: (x > 0).astype(x.dtype)
+        relu = lambda x: np.where(x > 0, x, 0)
+        relu_prime = lambda x: 1. * (x > 0)
         super().__init__(relu, relu_prime)

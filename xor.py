@@ -1,5 +1,5 @@
 from dense import Dense
-from activations import Tanh
+from activations import Tanh, Relu
 from loss_functions import mse, mse_prime
 import numpy as np
 
@@ -11,11 +11,11 @@ neural_network = [
     Dense(2,3),
     Tanh(),
     Dense(3,1),
-    Tanh()
+    Tanh(),
 ]
 
-epochs = 1000
-learning_rate = 0.1
+epochs = 10000
+learning_rate = 0.01
 # Training loop
 for epoch in range(epochs):
     # Not needed for the actual training but usefull to print/show

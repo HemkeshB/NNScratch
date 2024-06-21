@@ -1,12 +1,13 @@
 import numpy as np
 from keras._tf_keras.keras.datasets import mnist
 from keras._tf_keras.keras.utils import to_categorical
+import time
 
 from dense import Dense
 from convolutional import Convolutional
 from reshape import Reshape
 from activations import Sigmoid, Tanh
-from loss_functions import binary_cross_entropy, binary_cross_entropy_prime
+from loss_functions import binary_cross_entropy, binary_cross_entropy_prime, mse_prime, mse
 from network import train, predict
 
 def preproces_data(x, y, limit):
@@ -36,16 +37,18 @@ network = [
     Sigmoid()
 ]
 
+start_time = time.time()
 # train
 train(
     network,
-    binary_cross_entropy,
-    binary_cross_entropy_prime,
+    mse,
+    mse_prime,
     x_train,
     y_train,
     epochs=20,
     learning_rate=0.1
 )
+print("--- %s seconds ---" % (time.time() - start_time))
 
 # test
 for x, y in zip(x_test, y_test):
