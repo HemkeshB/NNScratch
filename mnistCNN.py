@@ -13,13 +13,14 @@ from network import train, predict
 def preproces_data(x, y, limit):
     zero_index = np.where(y == 0)[0][:limit]
     one_index = np.where(y == 1)[0][:limit]
-    all_indices = np.hstack((zero_index, one_index))
+    two_index = np.where(y == 2)[0][:limit]
+    all_indices = np.hstack((zero_index, one_index, two_index))
     all_indices = np.random.permutation(all_indices)
     x, y = x[all_indices], y[all_indices]
     x = x.reshape(len(x), 1, 28, 28)
     x = x.astype('float32') / 255
     y = to_categorical(y)
-    y = y.reshape(len(y), 2, 1)
+    y = y.reshape(len(y), 3, 1)
     return x, y
 
 
@@ -33,7 +34,7 @@ network = [
     Reshape((5, 26, 26), (5 * 26 * 26, 1)),
     Dense(5 * 26 * 26, 100),
     Sigmoid(),
-    Dense(100, 2),
+    Dense(100, 3),
     Sigmoid()
 ]
 
@@ -45,12 +46,26 @@ train(
     mse_prime,
     x_train,
     y_train,
-    epochs=20,
-    learning_rate=0.1
+    epochs=100,
+    learning_rate=0.01
 )
 print("--- %s seconds ---" % (time.time() - start_time))
 
-# test
-for x, y in zip(x_test, y_test):
-    output = predict(network, x)
-    print(f"pred: {np.argmax(output)}, true: {np.argmax(y)}")
+# test modified to show accuracy
+def calculate_accuracy(network, x_test, y_test):
+    correct_predictions = 0
+    total_predictions = len(x_test)
+
+    for x, y in zip(x_test, y_test):
+        output = predict(network, x)
+        predicted_label = np.argmax(output)
+        true_label = np.argmax(y)
+
+        if predicted_label == true_label:
+            correct_predictions += 1
+
+    accuracy = correct_predictions / total_predictions
+    return accuracy
+
+accuracy = calculate_accuracy(network, x_test, y_test)
+print(f"Accuracy: {accuracy * 100:.2f}%")
