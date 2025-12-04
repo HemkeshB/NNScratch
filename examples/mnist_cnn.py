@@ -1,17 +1,14 @@
-
 import numpy as np
-import cupy as xp
 from keras._tf_keras.keras.datasets import mnist
 from keras._tf_keras.keras.utils import to_categorical
+import time
 
-import time  # testing
-
-from dense_CuPy import Dense
-from convolutional_CuPy import Convolutional
-from reshape_CuPy import Reshape
-from activations_CuPy import Sigmoid, Tanh
-from loss_functions_CuPy import binary_cross_entropy, binary_cross_entropy_prime, mse_prime, mse
-from network import train, predict
+from nnscratch.layers.dense import Dense
+from nnscratch.layers.convolutional import Convolutional
+from nnscratch.layers.reshape import Reshape
+from nnscratch.layers.activations import Sigmoid, Tanh
+from nnscratch.losses.loss_functions import binary_cross_entropy, binary_cross_entropy_prime, mse_prime, mse
+from nnscratch.core.network import train, predict
 
 def preproces_data(x, y, limit):
     zero_index = np.where(y == 0)[0][:limit]
@@ -22,18 +19,14 @@ def preproces_data(x, y, limit):
     x, y = x[all_indices], y[all_indices]
     x = x.reshape(len(x), 1, 28, 28)
     x = x.astype('float32') / 255
-    y = to_categorical(y).astype('float32')
+    y = to_categorical(y)
     y = y.reshape(len(y), 3, 1)
     return x, y
 
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
-x_train, y_train = preproces_data(x_train, y_train, 1000)
+x_train, y_train = preproces_data(x_train, y_train, 100)
 x_test, y_test = preproces_data(x_test, y_test, 100)
-x_train = xp.asarray(x_train, dtype='float32')
-x_test = xp.asarray(x_test, dtype='float32')
-y_train = xp.asarray(y_train, dtype='float32')
-y_test = xp.asarray(y_test, dtype='float32')
 
 network = [
     Convolutional((1, 28, 28), 3, 5),
@@ -43,12 +36,7 @@ network = [
     Sigmoid(),
     Dense(100, 3),
     Sigmoid()
-    # Dense(28 * 28, 40),
-    # Tanh(),
-    # Dense(40, 10),
-    # Tanh()
 ]
-
 
 start_time = time.time()
 # train
@@ -63,7 +51,22 @@ train(
 )
 print("--- %s seconds ---" % (time.time() - start_time))
 
-# # test
-# for x, y in zip(x_test, y_test):
-#     output = predict(network, x)
-#     print(f"pred: {np.argmax(output)}, true: {np.argmax(y)}")
+# test modified to show accuracy
+def calculate_accuracy(network, x_test, y_test):
+    correct_predictions = 0
+    total_predictions = len(x_test)
+
+    for x, y in zip(x_test, y_test):
+        output = predict(network, x)
+        predicted_label = np.argmax(output)
+        true_label = np.argmax(y)
+
+        if predicted_label == true_label:
+            correct_predictions += 1
+
+    accuracy = correct_predictions / total_predictions
+    return accuracy
+
+accuracy = calculate_accuracy(network, x_test, y_test)
+print(f"Accuracy: {accuracy * 100:.2f}%")
+

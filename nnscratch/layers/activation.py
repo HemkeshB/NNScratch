@@ -1,5 +1,5 @@
-from layer import Layer
-import cupy as np
+from nnscratch.core.layer import Layer
+import numpy as np
 
 
 class Activation(Layer):

@@ -1,4 +1,4 @@
-from layer import Layer
+from nnscratch.core.layer import Layer
 import numpy as np
 
 class Dense(Layer):

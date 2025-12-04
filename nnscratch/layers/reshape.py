@@ -1,5 +1,5 @@
 import numpy as np
-from layer import Layer
+from nnscratch.core.layer import Layer
 
 
 class Reshape(Layer):
