@@ -1,20 +1,48 @@
 # Claude Code Generated: With Sonnet 4.5
 # Prompt 1: lets make a super simple pytorch transformer to do the same task as the mnistCNN.py file
 # Prompt 2: lets make a super simple pytorch transformer to do the same task
+
+# OpenCode Code Generated: With Sonnet 4.5
+#prompt 3 on plan: look at the current repo lets look at all three mnist files and lets make them all use the same data set with the same amount of training and testing
+#prompt 4 on build: Make the changes
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
-from torchvision import datasets, transforms
+from torch.utils.data import DataLoader, TensorDataset
+from datasets import load_dataset
+import numpy as np
 
 # Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
-# Load MNIST data using PyTorch built-in
-transform = transforms.Compose([transforms.ToTensor()])
+# Load MNIST data using Hugging Face datasets
+def preprocess_data(ds, limit):
+    x_list, y_list = [], []
+    for i, item in enumerate(ds):
+        if i >= limit:
+            break
+        image = np.array(item['image'])
+        label = item['label']
+        x = image.astype("float32") / 255.0
+        x_list.append(x)
+        y_list.append(label)
+    return np.array(x_list), np.array(y_list)
 
-train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
-test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+ds_train = load_dataset("ylecun/mnist", split="train")
+ds_test = load_dataset("ylecun/mnist", split="test")
+
+x_train, y_train = preprocess_data(ds_train, 10000)
+x_test, y_test = preprocess_data(ds_test, 1000)
+
+# Convert to PyTorch tensors
+train_dataset = TensorDataset(
+    torch.FloatTensor(x_train), 
+    torch.LongTensor(y_train)
+)
+test_dataset = TensorDataset(
+    torch.FloatTensor(x_test), 
+    torch.LongTensor(y_test)
+)
 
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
@@ -42,7 +70,8 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 # Training
 print("Training...")
-for epoch in range(10):
+test_acc = 0.0
+for epoch in range(200):
     model.train()
     correct, total = 0, 0
     for images, labels in train_loader:
@@ -72,6 +101,6 @@ for epoch in range(10):
             total += labels.size(0)
 
     test_acc = 100. * correct / total
-    print(f"Epoch {epoch+1}/10 | Train Acc: {train_acc:.2f}% | Test Acc: {test_acc:.2f}%")
+    print(f"Epoch {epoch+1}/200 | Train Acc: {train_acc:.2f}% | Test Acc: {test_acc:.2f}%")
 
 print(f"\nFinal Test Accuracy: {test_acc:.2f}%")

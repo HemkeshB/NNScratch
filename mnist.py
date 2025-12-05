@@ -27,8 +27,8 @@ def preprocess_data(ds, limit):
 ds_train = load_dataset("ylecun/mnist", split="train")
 ds_test = load_dataset("ylecun/mnist", split="test")
 
-x_train, y_train = preprocess_data(ds_train, 1000)
-x_test, y_test = preprocess_data(ds_test, 20)
+x_train, y_train = preprocess_data(ds_train, 10000)
+x_test, y_test = preprocess_data(ds_test, 1000)
 
 # Define the neural network
 network = [
@@ -39,7 +39,7 @@ network = [
 ]
 
 # Train the network
-train(network, mse, mse_prime, x_train, y_train, epochs=100, learning_rate=0.1)
+train(network, mse, mse_prime, x_train, y_train, epochs=200, learning_rate=0.005)
 
 # Test the network
 for x, y in zip(x_test, y_test):

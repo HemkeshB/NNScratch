@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-12-04T23:13:05.211010",
+  "config": {
+    "seed": 598,
+    "train_size": 10000,
+    "test_size": 1000,
+    "epochs": {
+      "dense": 20,
+      "cnn": 20,
+      "transformer": 20
+    },
+    "learning_rates": {
+      "dense": 0.01,
+      "cnn": 0.01,
+      "transformer": 0.01
+    }
+  },
+  "results": [
+    {
+      "model": "Dense Network",
+      "accuracy": 55.7,
+      "time": 7.872364282608032,
+      "params": 31810,
+      "epochs": 20,
+      "learning_rate": 0.01
+    },
+    {
+      "model": "CNN Network",
+      "accuracy": 8.9,
+      "time": 134.1706337928772,
+      "params": 342535,
+      "epochs": 20,
+      "learning_rate": 0.01
+    },
+    {
+      "model": "Transformer Network",
+      "accuracy": 31.2,
+      "time": 514.6767995357513,
+      "params": 613258,
+      "epochs": 20,
+      "learning_rate": 0.01
+    }
+  ]
+}
