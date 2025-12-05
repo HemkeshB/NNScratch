@@ -1,6 +1,8 @@
-from dense import Dense
-from activations import Tanh, Relu
-from loss_functions import mse, mse_prime
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from nnscratch import Dense, Tanh, Relu, mse, mse_prime
 import numpy as np
 
 

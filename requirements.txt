@@ -3,5 +3,7 @@
 
 numpy>=1.21.0
 scipy>=1.7.0
-tensorflow>=2.10.0  # For keras datasets and utilities
+datasets>=2.0.0
+torch>=2.0.0
+torchvision>=0.15.0
 

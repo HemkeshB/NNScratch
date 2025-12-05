@@ -1,32 +1,38 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 import numpy as np
-from keras._tf_keras.keras.datasets import mnist
-from keras._tf_keras.keras.utils import to_categorical
+from datasets import load_dataset
 import time
 
-from dense import Dense
-from convolutional import Convolutional
-from reshape import Reshape
-from activations import Sigmoid, Tanh
-from loss_functions import binary_cross_entropy, binary_cross_entropy_prime, mse_prime, mse
-from network import train, predict
+from nnscratch import Dense, Convolutional, Reshape, Sigmoid, Tanh, binary_cross_entropy, binary_cross_entropy_prime, mse_prime, mse, train, predict
 
-def preproces_data(x, y, limit):
-    zero_index = np.where(y == 0)[0][:limit]
-    one_index = np.where(y == 1)[0][:limit]
-    two_index = np.where(y == 2)[0][:limit]
-    all_indices = np.hstack((zero_index, one_index, two_index))
-    all_indices = np.random.permutation(all_indices)
-    x, y = x[all_indices], y[all_indices]
-    x = x.reshape(len(x), 1, 28, 28)
-    x = x.astype('float32') / 255
-    y = to_categorical(y)
-    y = y.reshape(len(y), 3, 1)
-    return x, y
+def preprocess_data(ds, limit):
+    x_list, y_list = [], []
+    # Filter for digits 0, 1, 2 only
+    count = 0
+    for item in ds:
+        label = item['label']
+        if label in [0, 1, 2] and count < limit * 3:
+            image = np.array(item['image'])
+            x = image.reshape(1, 28, 28).astype('float32') / 255
+            y = np.zeros((3, 1))
+            y[label] = 1
+            x_list.append(x)
+            y_list.append(y)
+            count += 1
+        if count >= limit * 3:
+            break
+    return np.array(x_list), np.array(y_list)
 
 
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
-x_train, y_train = preproces_data(x_train, y_train, 100)
-x_test, y_test = preproces_data(x_test, y_test, 100)
+# Load MNIST data
+ds_train = load_dataset("ylecun/mnist", split="train")
+ds_test = load_dataset("ylecun/mnist", split="test")
+
+x_train, y_train = preprocess_data(ds_train, 100)
+x_test, y_test = preprocess_data(ds_test, 100)
 
 network = [
     Convolutional((1, 28, 28), 3, 5),
@@ -46,7 +52,7 @@ train(
     mse_prime,
     x_train,
     y_train,
-    epochs=100,
+    epochs=500,
     learning_rate=0.01
 )
 print("--- %s seconds ---" % (time.time() - start_time))

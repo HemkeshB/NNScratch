@@ -1,25 +1,34 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 import numpy as np
-from keras._tf_keras.keras.datasets import mnist
-from keras._tf_keras.keras.utils import to_categorical
+from datasets import load_dataset
 
 # Import your custom classes and functions
-from dense import Dense
-from activations import Tanh
-from loss_functions import mse, mse_prime
-from network import train, predict
+from nnscratch import Dense, Tanh, mse, mse_prime, train, predict
 
 # Preprocess data function
-def preprocess_data(x, y, limit):
-    x = x.reshape(x.shape[0], 28 * 28, 1)  # Flatten images and add channel dimension
-    x = x.astype("float32") / 255  # Normalize pixel values
-    y = to_categorical(y)  # One-hot encode labels
-    y = y.reshape(y.shape[0], 10, 1)  # Reshape to (N, 10, 1) to match the network output format
-    return x[:limit], y[:limit]
+def preprocess_data(ds, limit):
+    x_list, y_list = [], []
+    for i, item in enumerate(ds):
+        if i >= limit:
+            break
+        image = np.array(item['image'])
+        label = item['label']
+        x = image.reshape(28 * 28, 1).astype("float32") / 255
+        y = np.zeros((10, 1))
+        y[label] = 1
+        x_list.append(x)
+        y_list.append(y)
+    return np.array(x_list), np.array(y_list)
 
 # Load MNIST data
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
-x_train, y_train = preprocess_data(x_train, y_train, 1000)
-x_test, y_test = preprocess_data(x_test, y_test, 20)
+ds_train = load_dataset("ylecun/mnist", split="train")
+ds_test = load_dataset("ylecun/mnist", split="test")
+
+x_train, y_train = preprocess_data(ds_train, 1000)
+x_test, y_test = preprocess_data(ds_test, 20)
 
 # Define the neural network
 network = [
